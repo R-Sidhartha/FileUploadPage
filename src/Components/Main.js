@@ -7,65 +7,8 @@ const Main = ({ isMobileView }) => {
   const [files, setFiles] = useState([]);
   const [totalCharacters, setTotalCharacters] = useState(0);
   const [completedUploads, setCompletedUploads] = useState([]);
-
-  // const handleFileChange = (e) => {
-  //   const newFiles = Array.from(e.target.files);
-
-  //   newFiles.forEach((file) => {
-  //     const reader = new FileReader();
-
-  //     reader.onload = () => {
-  //       const text = reader.result;
-  //       const trimmedText = text.replace(/\s+/g, " ");
-  //       const charCount = trimmedText.length;
-  //       setTotalCharacters((prevTotalChars) => prevTotalChars + charCount);
-
-  //       // Mark the upload as complete in the completedUploads state
-  //       setCompletedUploads((prevCompletedUploads) => [
-  //         ...prevCompletedUploads,
-  //         file,
-  //       ]);
-  //     };
-  //     reader.onprogress = (e) => {
-  //       if (e.lengthComputable) {
-  //         const percentComplete = (e.loaded / e.total) * 100;
-
-  //         // Update the progress bar for this file
-  //         setFiles((prevFiles) => {
-  //           const updatedFiles = [...prevFiles];
-  //           const fileIndex = updatedFiles.findIndex((f) => f.file === file);
-  //           if (fileIndex !== -1) {
-  //             updatedFiles[fileIndex].progress = percentComplete;
-  //           }
-  //           return updatedFiles;
-  //         });
-  //       }
-  //     };
-
-  //     reader.readAsText(file);
-
-  //     // Add the file to the list of files with progress
-  //     setFiles((prevFiles) => [...prevFiles, { file, progress: 0 }]);
-  //   });
-  // };
-
-  // const removeFile = (fileToRemove) => {
-  //   const removedFile = files.find((file) => file.file === fileToRemove);
-  //   if (removedFile) {
-  //     const charCount = removedFile.charCount || 0;
-  //     // Subtract the character count from the totalCharacters state
-  //     setTotalCharacters((prevTotalChars) => prevTotalChars - charCount);
-  //   }
-
-  //   // Remove the file from the files state
-  //   setFiles((prevFiles) => prevFiles.filter((f) => f.file !== fileToRemove));
-  // };
-
   
   useEffect(() => {
-    // Recalculate the character count whenever files change
-    // let newText = text.split(/\s+/);
-    // setText(newText.join(" "));
     const charCount = files.reduce((total, file) => {
       const trimmedText = file.text ? file.text.split(/\s+/) : "";
       const text=trimmedText.join(" ");
