@@ -76,32 +76,32 @@ const Main = ({ isMobileView }) => {
   return (
     <>
       <div className="fileupload">
-        <h2 className="text-4xl mt-5 mb-16 ml-44">Upload Your File Here</h2>
-        <div className="flex w-screen">
-          <div className="w-1/5 mt-16">
+        <h2 className={`text-4xl mt-5  ${isMobileView?'':'ml-44 mb-16'}`}>Upload Your File Here</h2>
+        <div className={`${isMobileView ? 'flex-col':''}flex w-screen`}>
+          <div className={`${isMobileView ? 'w-full':'w-1/5 mt-16'}`}>
             <nav
-              className={`bg-gray-200 border-r border-gray-300  w-full flex flex-col justify-center items-center`}
+              className={`bg-gray-200 border-r border-gray-300  w-full flex justify-center items-center flex-col}`}
             >
-              <ul className="p-4 space-y-8 my-5">
-                <li className="flex items-center text-lg hover:opacity-60">
+              <ul className={`p-4  my-5 ${isMobileView ?"flex":'space-y-8'}`}>
+                <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-regular fa-file text-gray-500 fa-lg"></i>
                   <Link className="ml-2" to="/">
                     File
                   </Link>
                 </li>
-                <li className="flex items-center text-lg hover:opacity-60">
+                <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-regular fa-file-word text-gray-500 fa-lg"></i>
                   <Link className="ml-2" to="/">
                     Text
                   </Link>
                 </li>
-                <li className="flex items-center text-lg hover:opacity-60">
+                <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-solid fa-earth-asia text-gray-500 fa-lg"></i>
                   <Link className="ml-2" to="/">
                     Website
                   </Link>
                 </li>
-                <li className="flex items-center text-lg hover:opacity-60">
+                <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-regular fa-comments text-gray-500 fa-lg"></i>
                   <Link to="/" className="ml-2">
                     Q&A
@@ -110,7 +110,7 @@ const Main = ({ isMobileView }) => {
               </ul>
             </nav>
           </div>
-          <div className="flex flex-col items-center w-1/2 ml-36">
+          <div className={`flex flex-col items-center  ${isMobileView ?'mx-5 w-6/7':'ml-36 w-1/2'}`}>
             <div className="border border-gray-400 uploadbox p-4 bg-white rounded-lg shadow-lg mx-10 w-full h-96">
               <div className="flex flex-col items-center justify-center mt-14">
                 <img className="w-20" src={uploadpng} alt="" />
@@ -178,10 +178,10 @@ const Main = ({ isMobileView }) => {
           </div>
           <div>
             {files.length > 0 && (
-              <div className="mt-4 mx-10">
+              <div className={'mt-4 mx-10 flex flex-col'}>
                 <h2 className="text-xl font-semibold my-2">Total Characters</h2>
                 <p>{totalCharacters} characters</p>
-                <button className="btn block mt-7 px-4 py-2 rounded-md bg-gradient-to-r from-blue-300 via-purple-500 to-blue-200 text-lg font-semibold hover:opacity-90">
+                <button className="btn block mt-7 px-4 py-2 rounded-md bg-gradient-to-r from-blue-300 via-purple-500 to-blue-200 text-lg font-semibold hover:opacity-90 my-2">
                   Create Chatbot
                 </button>
               </div>
