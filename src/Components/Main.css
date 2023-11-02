@@ -1,0 +1,15 @@
+@keyframes fillProgressBar {
+    0% {
+      width: 0;
+    }
+    50%{
+        width: 50%;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+  
+  .progressBar {
+    animation: fillProgressBar 2s ease-out forwards;
+  }
