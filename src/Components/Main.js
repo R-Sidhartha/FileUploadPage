@@ -1,45 +1,44 @@
 import React, { useEffect, useState } from "react";
+import { useDropzone } from "react-dropzone";
 import uploadpng from "./uploadpng2.png";
 import filepng from "./filepng.png";
 import { Link } from "react-router-dom";
+
 
 const Main = ({ isMobileView }) => {
   const [files, setFiles] = useState([]);
   const [totalCharacters, setTotalCharacters] = useState(0);
   const [completedUploads, setCompletedUploads] = useState([]);
-  
+
   useEffect(() => {
     const charCount = files.reduce((total, file) => {
       const trimmedText = file.text ? file.text.split(/\s+/) : "";
-      const text=trimmedText.join(" ");
+      const text = trimmedText.join(" ");
       return total + text.length;
     }, 0);
 
     setTotalCharacters(charCount);
   }, [files]);
-  const handleFileChange = (e) => {
-    const newFiles = Array.from(e.target.files);
 
-    const processFile = (file) => {
+  const handleFileChange = (acceptedFiles) => {
+    const newFiles = acceptedFiles;
+
+    newFiles.forEach((file) => {
       const reader = new FileReader();
 
       reader.onload = () => {
         const text = reader.result;
-        // Mark the upload as complete in the completedUploads state
         setCompletedUploads((prevCompletedUploads) => [
           ...prevCompletedUploads,
           file,
         ]);
-        setFiles((prevFiles) => [
-          ...prevFiles,
-          { file, progress: 100, text },
-        ]);
+        setFiles((prevFiles) => [...prevFiles, { file, progress: 100, text }]);
       };
 
       reader.onprogress = (progressEvent) => {
         if (progressEvent.lengthComputable) {
-          const percentComplete = (progressEvent.loaded / progressEvent.total) * 100;
-          // Update the progress bar for this file
+          const percentComplete =
+            (progressEvent.loaded / progressEvent.total) * 100;
           setFiles((prevFiles) => {
             const updatedFiles = prevFiles.map((f) =>
               f.file === file ? { ...f, progress: percentComplete } : f
@@ -50,39 +49,32 @@ const Main = ({ isMobileView }) => {
       };
 
       reader.readAsText(file);
-    };
-
-    // Upload files one at a time
-    const uploadNextFile = (remainingFiles) => {
-      if (remainingFiles.length > 0) {
-        const nextFile = remainingFiles[0];
-        processFile(nextFile);
-        setTimeout(() => {
-          // Upload the next file after a delay (adjust as needed)
-          uploadNextFile(remainingFiles.slice(1));
-        }, 1000); // Adjust the delay as needed
-      }
-    };
-
-    // Start uploading files one at a time
-    uploadNextFile(newFiles);
+    });
   };
 
   const removeFile = (fileToRemove) => {
-    // Remove the file from the files state
     setFiles((prevFiles) => prevFiles.filter((f) => f.file !== fileToRemove));
   };
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: handleFileChange,
+    accept: ".pdf, .doc, .docx, .txt",
+  });
 
   return (
     <>
       <div className="fileupload">
-        <h2 className={`text-4xl mt-5  ${isMobileView?'':'ml-44 mb-16'}`}>Upload Your File Here</h2>
-        <div className={`${isMobileView ? 'flex-col':''}flex w-screen`}>
-          <div className={`${isMobileView ? 'w-full':'w-1/5 mt-16'}`}>
+        <h2 className={`text-4xl mt-5  ${isMobileView ? "" : "ml-44 mb-16"}`}>
+          Upload Your File Here
+        </h2>
+        <div className={`${isMobileView ? "flex-col" : ""}flex w-screen`}>
+          <div className={`${isMobileView ? "w-full" : "w-1/5 mt-16"}`}>
             <nav
-              className={`bg-gray-200 border-r border-gray-300  w-full flex justify-center items-center flex-col}`}
+              className={`bg-gray-200 border-r border-gray-300  w-full flex justify-center items-center flex-col`}
             >
-              <ul className={`p-4  my-5 ${isMobileView ?"flex":'space-y-8'}`}>
+              <ul
+                className={`p-4  my-5 ${isMobileView ? "flex" : "space-y-8"}`}
+              >
                 <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-regular fa-file text-gray-500 fa-lg"></i>
                   <Link className="ml-2" to="/">
@@ -110,23 +102,31 @@ const Main = ({ isMobileView }) => {
               </ul>
             </nav>
           </div>
-          <div className={`flex flex-col items-center  ${isMobileView ?'mx-5 w-6/7':'ml-36 w-1/2'}`}>
-            <div className="border border-gray-400 uploadbox p-4 bg-white rounded-lg shadow-lg mx-10 w-full h-96">
+          <div
+            className={`flex flex-col items-center  ${
+              isMobileView ? "mx-5 w-6/7" : "ml-36 w-1/2"
+            }`}
+          >
+            <div className="border-dashed border-2 border-cyan-800 uploadbox p-4 bg-white  shadow-lg mx-10 w-full h-96 relative cursor-pointer" {...getRootProps()}>
               <div className="flex flex-col items-center justify-center mt-14">
-                <img className="w-20" src={uploadpng} alt="" />
-                <h4 className=" mt-5 mb-16">
+                <div class="relative w-16 h-16 rounded-full">
+                  <div class="animate-ping border-2 border-cyan-300 rounded-full absolute inset-0 m-auto"></div>
+                  <div class="animate-ping border-2 border-cyan-400 rounded-full absolute inset-0 m-auto animate-delay-200"></div>
+                  <div class="animate-ping border-2 border-cyan-600 rounded-full absolute inset-0 m-auto animate-delay-600"></div>
+
+                  <img class="w-20 relative z-50" src={uploadpng} alt="" />
+                </div>
+                <h4 className=" mt-8 mb-16">
                   Drag and drop your file here to upload
-                  <h6 className="text-sm opacity-70 my-2">Supported file types: .pdf, .docs, .docx, .txt (maxSize-15MB)</h6>
+                  <h6 className="text-sm opacity-70 my-2">
+                    Supported file types: .pdf, .docs, .docx, .txt
+                    (maxSize-15MB)
+                  </h6>
                 </h4>
-                
               </div>
               <input
-                type="file"
-                multiple
+                {...getInputProps()}
                 accept=".pdf, .doc, .docx, .txt"
-                onChange={handleFileChange}
-                className="hidden"
-                id="file-upload"
                 maxSize={15 * 1024 * 1024}
               />
               <label
@@ -135,9 +135,15 @@ const Main = ({ isMobileView }) => {
               >
                 Select Files
               </label>
+              <div className="border-animation"></div>
             </div>
             <div className="mt-4 mx-10 w-full">
-              <h2 className="text-xl font-semibold mt-5">Uploaded Files <span className="mx-3 text-lg">(Total Files: {files.length})</span></h2>
+              <h2 className="text-xl font-semibold mt-5">
+                Uploaded Files{" "}
+                <span className="mx-3 text-lg">
+                  (Total Files: {files.length})
+                </span>
+              </h2>
               <div className="flex flex-col justify-center items-center mt-10">
                 <ul className="mt-2 grid gap-4 grid-cols-5 ">
                   {files.map((file, index) => (
@@ -178,7 +184,7 @@ const Main = ({ isMobileView }) => {
           </div>
           <div>
             {files.length > 0 && (
-              <div className={'mt-4 mx-10 flex flex-col'}>
+              <div className={"mt-4 mx-10 flex flex-col"}>
                 <h2 className="text-xl font-semibold my-2">Total Characters</h2>
                 <p>{totalCharacters} characters</p>
                 <button className="btn block mt-7 px-4 py-2 rounded-md bg-gradient-to-r from-blue-300 via-purple-500 to-blue-200 text-lg font-semibold hover:opacity-90 my-2">
