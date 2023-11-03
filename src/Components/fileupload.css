@@ -1,0 +1,12 @@
+.fileupload{
+    background-image: url("../Components/cloudbg.avif");
+    background-size: cover; 
+    background-repeat: no-repeat; 
+    height: 100vh;
+  }
+.mobilefileupload{
+    background-image: url("../Components/cloudbg.avif");
+    background-size: cover; 
+    background-repeat: repeat-y; 
+    height: 100vh;
+  }
