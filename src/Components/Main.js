@@ -3,56 +3,93 @@ import { useDropzone } from "react-dropzone";
 import uploadpng from "./uploadpng2.png";
 import filepng from "./filepng.png";
 import { Link } from "react-router-dom";
-import './fileupload.css'
-
+import "./fileupload.css";
+import { pdfjs } from "react-pdf"; 
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 const Main = ({ isMobileView }) => {
   const [files, setFiles] = useState([]);
   const [totalCharacters, setTotalCharacters] = useState(0);
   const [completedUploads, setCompletedUploads] = useState([]);
 
-  useEffect(() => {
-    const charCount = files.reduce((total, file) => {
-      const trimmedText = file.text ? file.text.split(/\s+/) : "";
-      const text = trimmedText.join(" ");
-      return total + text.length;
-    }, 0);
+  // Function to handle text extraction for PDF files
+  const extractPdfText = async (file) => {
+    const loadingTask = pdfjs.getDocument(URL.createObjectURL(file));
+    const pdf = await loadingTask.promise;
+    const numPages = pdf.numPages;
+    let text = "";
 
-    setTotalCharacters(charCount);
-  }, [files]);
+    for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const content = await page.getTextContent();
 
-  const handleFileChange = (acceptedFiles) => {
-    const newFiles = acceptedFiles;
+      for (const item of content.items) {
+        text += item.str + " ";
+      }
+    }
 
-    newFiles.forEach((file) => {
+    return text;
+  };
+
+  const extractTextFromTextFile = (file) => {
+    return new Promise((resolve) => {
       const reader = new FileReader();
 
-      reader.onload = () => {
-        const text = reader.result;
-        setCompletedUploads((prevCompletedUploads) => [
-          ...prevCompletedUploads,
-          file,
-        ]);
-        setFiles((prevFiles) => [...prevFiles, { file, progress: 100, text }]);
-      };
-
-      reader.onprogress = (progressEvent) => {
-        if (progressEvent.lengthComputable) {
-          const percentComplete =
-            (progressEvent.loaded / progressEvent.total) * 100;
-          setFiles((prevFiles) => {
-            const updatedFiles = prevFiles.map((f) =>
-              f.file === file ? { ...f, progress: percentComplete } : f
-            );
-            return updatedFiles;
-          });
-        }
+      reader.onload = (event) => {
+        const text = event.target.result;
+        resolve(text);
       };
 
       reader.readAsText(file);
     });
   };
 
+  useEffect(() => {
+      const charCount =  files.reduce( (total, file) => {
+        let text = "";
+        if (file.type === "application/pdf") {
+          text =  extractPdfText(file);
+        } else if (file.text) {
+          const trimmedText = file.text.split(/\s+/);
+          text = trimmedText.join(" ");
+        }
+        return total + text.length;
+      }, 0);
+
+      setTotalCharacters(charCount);
+  }, [files]);
+  const calculateCumulativeCharCount = () => {
+    const charCounts = files.map((file) => {
+      if (file.type === 'application/pdf' || file.type === 'text/plain') {
+        return file.text.length;
+      }
+      return 0; 
+    });
+  
+    const totalCharCount = charCounts.reduce((total, count) => total + count, 0);
+    setTotalCharacters(totalCharCount);
+  };
+  const handleFileChange = async (acceptedFiles) => {
+    const newFiles = acceptedFiles;
+
+    for (const file of newFiles) {
+      setCompletedUploads((prevCompletedUploads) => [
+        ...prevCompletedUploads,
+        file,
+      ]);
+
+      let text = "";
+      if (file.type === "application/pdf") {
+        text = await extractPdfText(file);
+      } else if (file.type === "text/plain") {
+        text = await extractTextFromTextFile(file);
+      }
+
+      setFiles((prevFiles) => [...prevFiles, { file, progress: 100, text }]);
+    }
+    // Calculate the cumulative character count after processing all files
+    calculateCumulativeCharCount();
+  };
   const removeFile = (fileToRemove) => {
     setFiles((prevFiles) => prevFiles.filter((f) => f.file !== fileToRemove));
   };
@@ -64,22 +101,27 @@ const Main = ({ isMobileView }) => {
 
   return (
     <>
-      <div className={`fileupload ${isMobileView ? 'mobilefileupload':''}`}>
+      <div className={`fileupload ${isMobileView ? "mobilefileupload" : ""}`}>
         <h2 className={`text-4xl p-5 ${isMobileView ? "" : " mb-2"}`}>
           Upload Your File Here
         </h2>
-        <div className={`flex justify-center items-center h-1 ${isMobileView ? "" : ""}`}>
-        <div className="w-1/6 bg-gray-600 h-1/2 my-2 rounded-2xl opacity-70"></div>
+        <div
+          className={`flex justify-center items-center h-1 ${
+            isMobileView ? "" : ""
+          }`}
+        >
+          <div className="w-1/6 bg-gray-600 h-1/2 my-2 rounded-2xl opacity-70"></div>
         </div>
-        <h4 className={`${isMobileView?'mb-1':'mb-8'} my-3 mx-1`}><span className="text-2xl">&#187;</span> Train Your Chatbot: Upload and Enhance its Knowledge and Skills with Our Convenient Upload Page.</h4>
+        <h4 className={`${isMobileView ? "mb-1" : "mb-8"} my-3 mx-1`}>
+          <span className="text-2xl">&#187;</span> Train Your Chatbot: Upload
+          and Enhance its Knowledge and Skills with Our Convenient Upload Page.
+        </h4>
         <div className={`${isMobileView ? "flex-col" : ""}flex w-screen`}>
           <div className={`${isMobileView ? "w-full" : "w-1/5 mt-16"}`}>
             <nav
               className={`bg-transparent  w-full flex justify-center items-center flex-col`}
             >
-              <ul
-                className={`p-4   ${isMobileView ? "flex" : "space-y-8"}`}
-              >
+              <ul className={`p-4   ${isMobileView ? "flex" : "space-y-8"}`}>
                 <li className="flex items-center text-xl hover:opacity-60 mx-2">
                   <i className="fa-regular fa-file  fa-lg"></i>
                   <Link className="ml-2" to="/">
@@ -112,10 +154,13 @@ const Main = ({ isMobileView }) => {
               isMobileView ? "mx-5 w-6/7" : "ml-20 w-1/2"
             }`}
           >
-            <div className="rounded-2xl border-2 border-opacity-40 border-gray-600 uploadbox p-4 bg-gradient-to-b from-gray-400 via-gray-300 to-gray-200  shadow-lg mx-10 w-full h-96 relative cursor-pointer" {...getRootProps()}>
+            <div
+              className="rounded-2xl border-2 border-opacity-40 border-gray-600 uploadbox p-4 bg-gradient-to-b from-gray-400 via-gray-300 to-gray-200  shadow-lg mx-10 w-full h-96 relative cursor-pointer"
+              {...getRootProps()}
+            >
               <div className="flex flex-col items-center justify-center mt-14">
                 <div class="relative w-16 h-16 rounded-full">
-                <div class="w-10 h-10 border-4 border-gray-400 rounded-full absolute inset-0 m-auto"></div>
+                  <div class="w-10 h-10 border-4 border-gray-400 rounded-full absolute inset-0 m-auto"></div>
                   <div class="border-dotted animate-ping2 border-2 border-cyan-600 rounded-full absolute inset-0 m-auto delay-100"></div>
                   <div class="border-dotted animate-ping border-2 border-cyan-600 rounded-full absolute inset-0 m-auto delay-300 "></div>
 
@@ -189,13 +234,15 @@ const Main = ({ isMobileView }) => {
           </div>
           <div>
             {files.length > 0 && (
-              <div className={`mt-4 mx-10 flex flex-col justify-center items-center `}>
+              <div
+                className={`mt-4 mx-10 flex flex-col justify-center items-center `}
+              >
                 <h2 className="text-xl font-semibold my-2">Total Characters</h2>
                 <p>{totalCharacters} characters</p>
                 <div>
-                <button className="btn block mt-7 px-4 py-2 rounded-md bg-gradient-to-r from-blue-300 via-purple-500 to-blue-200 text-lg font-semibold hover:opacity-90 my-2">
-                  Create Chatbot &#8230;
-                </button>
+                  <button className="btn block mt-7 px-4 py-2 rounded-md bg-gradient-to-r from-blue-300 via-purple-500 to-blue-200 text-lg font-semibold hover:opacity-90 my-2">
+                    Create Chatbot &#8230;
+                  </button>
                 </div>
               </div>
             )}
