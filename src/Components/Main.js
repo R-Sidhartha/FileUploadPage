@@ -3,7 +3,7 @@ import { useDropzone } from "react-dropzone";
 import uploadpng from "./uploadpng2.png";
 import filepng from "./filepng.png";
 import { Link } from "react-router-dom";
-import "./fileupload.css";
+// import "./fileupload.css";
 import { pdfjs } from "react-pdf"; 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -102,7 +102,7 @@ const Main = ({ isMobileView }) => {
   return (
     <>
       <div className={`fileupload ${isMobileView ? "mobilefileupload" : ""}`}>
-        <h2 className={`text-4xl p-5 ${isMobileView ? "" : " mb-2"}`}>
+        <h2 className={`text-3xl p-4 ${isMobileView ? "" : " mb-2"}`}>
           Upload Your File Here
         </h2>
         <div
@@ -110,7 +110,7 @@ const Main = ({ isMobileView }) => {
             isMobileView ? "" : ""
           }`}
         >
-          <div className="w-1/6 bg-gray-600 h-1/2 my-2 rounded-2xl opacity-70"></div>
+          <div className="bg-gray-600 h-1/2 w-52  rounded-2xl opacity-70"></div>
         </div>
         <h4 className={`${isMobileView ? "mb-1" : "mb-8"} my-3 mx-1`}>
           <span className="text-2xl">&#187;</span> Train Your Chatbot: Upload
@@ -122,25 +122,25 @@ const Main = ({ isMobileView }) => {
               className={`bg-transparent  w-full flex justify-center items-center flex-col`}
             >
               <ul className={`p-4   ${isMobileView ? "flex" : "space-y-8"}`}>
-                <li className="flex items-center text-xl hover:opacity-60 mx-2">
+                <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-regular fa-file  fa-lg"></i>
                   <Link className="ml-2" to="/">
                     File
                   </Link>
                 </li>
-                <li className="flex items-center text-xl hover:opacity-60 mx-2">
+                <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-regular fa-file-word  fa-lg"></i>
                   <Link className="ml-2" to="/">
                     Text
                   </Link>
                 </li>
-                <li className="flex items-center text-xl hover:opacity-60 mx-2">
+                <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-solid fa-earth-asia  fa-lg"></i>
                   <Link className="ml-2" to="/">
                     Website
                   </Link>
                 </li>
-                <li className="flex items-center text-xl hover:opacity-60 mx-2">
+                <li className="flex items-center text-lg hover:opacity-60 mx-2">
                   <i className="fa-regular fa-comments  fa-lg"></i>
                   <Link to="/" className="ml-2">
                     Q&A
@@ -212,7 +212,7 @@ const Main = ({ isMobileView }) => {
                           className="cursor-pointer flex flex-col items-center hover:opacity-80"
                         >
                           <img className="w-9 mx-1" src={filepng} alt="" />
-                          <span className="text-xs">{file.file.name}</span>
+                          <span className="text-xs break-words w-3/4 text-center">{file.file.name}</span>
                           <span className="text-xs my-2">
                             {file.file.size / 1024} KB
                           </span>
