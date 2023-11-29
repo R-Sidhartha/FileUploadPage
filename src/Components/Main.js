@@ -113,17 +113,17 @@ const Main = ({ isMobileView }) => {
             isMobileView ? "" : ""
           }`}
         ></div>
-        <h4 className={`${isMobileView ? "mb-1" : "mb-6"} my-1 mx-1 text-sm text-center`}>
+        <h4 className={`${isMobileView ? "mb-1 mx-2" : "mb-6"} my-1 mx-1 text-sm text-center`}>
           Train Your Chatbot: Upload and Enhance its Knowledge and Skills with
           Our Convenient Upload Page.
         </h4>
         <div
           className={`${
-            isMobileView ? "flex-col" : ""
-          }flex flex-col w-screen  justify-center items-center`}
+            isMobileView ? " flex-col" : ""
+          } flex flex-col w-screen  justify-center items-center`}
         >
-          <div className="flex justify-center w-full">
-            <div
+          <div className={`flex justify-center w-full ${isMobileView?' flex-col items-center ':''}`}>
+            <div 
               className={`${
                 isMobileView ? "w-full" : "w-1/5"
               } flex flex-col items-center mx-2 `}
@@ -195,7 +195,7 @@ const Main = ({ isMobileView }) => {
                 />
                 <label
                   htmlFor="file-upload"
-                  className=" w-1/5 bg-gradient-to-r from-blue-300 via-purple-500 to-blue-200 p-3  rounded-md cursor-pointer hover:opacity-80 font-semibold text-center"
+                  className={` ${isMobileView?' w-1/2 ': 'w-1/5 '} bg-gradient-to-r from-blue-300 via-purple-500 to-blue-200 p-3  rounded-md cursor-pointer hover:opacity-80 font-semibold text-center`}
                 >
                   Select Files
                 </label>
@@ -203,11 +203,11 @@ const Main = ({ isMobileView }) => {
             </div>
 
             <div
-              className={`w-1/5 flex flex-col items-center ${
+              className={`${isMobileView?' w-11/12 my-3 ':' w-1/5 mx-2 '}  flex flex-col items-center ${
                 files.length > 0
                   ? "border border-gray-400 border-opacity-40 rounded-3xl"
                   : ""
-              } mx-2 `}
+              }  `}
             >
               {files.length > 0 && (
                 <div
@@ -236,7 +236,7 @@ const Main = ({ isMobileView }) => {
             <h2 className="text-xl font-semibold mt-5 text-center">Uploaded Files </h2>
             {files.length > 0 ? (
               <div className="flex flex-col justify-center items-center mt-2">
-                <ul className="mt-2 grid grid-cols-3 w-11/12 ">
+                <ul className={`mt-2 grid ${isMobileView ? 'grid-cols-1' : ' grid-cols-3 '} w-11/12 `}>
                   {files.map((file, index) => (
                     <li key={index} className="mb-2 mx-5 ">
                       <div className="flex flex-col items-center ">
