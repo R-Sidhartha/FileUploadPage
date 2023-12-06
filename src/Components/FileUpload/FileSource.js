@@ -52,7 +52,6 @@ const FileSource = ({ setTotalCharacters, isMobileView }) => {
   
     // Use functional update to avoid potential stale closure issues
     setTotalCharacters(prevTotalCharacters => prevTotalCharacters + charCount);
-     // eslint-disable-next-line
   }, [files, setTotalCharacters]);
   
   const calculateCumulativeCharCount = () => {
