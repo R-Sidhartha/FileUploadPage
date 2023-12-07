@@ -1,104 +1,125 @@
 import React, { useState } from "react";
 
-const QASource = ({setTotalCharacters}) => {
+const QASource = ({ setTotalCharacters }) => {
   const [qaComponents, setQaComponents] = useState([]);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 
   const handleAddComponent = () => {
-    const newQaComponent = { question, answer };
-    setTotalCharacters(question.length + answer.length);
-    setQaComponents((prevQaComponents) => [...prevQaComponents, newQaComponent]);
-    setQuestion("");
-    setAnswer("");
+    if (question.trim() !== "" && answer.trim() !== "") {
+      const newQaComponent = { question, answer };
+      setTotalCharacters(
+        (prevCharCount) => prevCharCount + question.length + answer.length
+      );
+
+      setQaComponents((prevComponents) => [...prevComponents, newQaComponent]);
+      setQuestion("");
+      setAnswer("");
+    }
   };
-  
+
   const handleRemoveComponent = (index) => {
-    // Get the lengths of the question and answer before updating state
-    const questionLength = qaComponents[index].question.length;
-    const answerLength = qaComponents[index].answer.length;
-  
-    // Update charCount by subtracting the lengths of the removed question and answer
-    setTotalCharacters((prevCharCount) => prevCharCount - questionLength - answerLength);
-  
-    // Update qaComponents by removing the specified component
-    setQaComponents((prevQaComponents) => prevQaComponents.filter((_, i) => i !== index));
-  };
-  
-  
-  
+    // Subtract the char count of the removed component
+    const removedComponent = qaComponents[index];
+    setTotalCharacters(
+      (prevCharCount) =>
+        prevCharCount -
+        removedComponent.question.length -
+        removedComponent.answer.length
+    );
 
-  const handleCloseAllComponents = () => {
-    setQaComponents([]);
-    setTotalCharacters(0);
-  };
-
-  const handleQuestionChange = (event) => {
-    const newQuestion = event.target.value;
-    setQuestion(newQuestion);
-    setTotalCharacters((prevCharCount) => {
-      const removedQuestionChars = question.length;
-      return prevCharCount - removedQuestionChars + newQuestion.length;
-    });
-  };
-
-  const handleAnswerChange = (event) => {
-    const newAnswer = event.target.value;
-    setAnswer(newAnswer);
-    setTotalCharacters((prevCharCount) => {
-      const removedAnswerChars = answer.length;
-      return prevCharCount - removedAnswerChars + newAnswer.length;
+    // Remove the component from the array
+    setQaComponents((prevComponents) => {
+      const updatedComponents = [...prevComponents];
+      updatedComponents.splice(index, 1);
+      return updatedComponents;
     });
   };
 
   return (
-    <div>
-      {qaComponents.map((qa, index) => (
-        <div key={index} className="flex flex-col my-4 mx-4">
-          <div className="border border-gray-300 p-2 relative">
-            <label htmlFor={`question-${index}`}>Question</label>
+    <div className="p-2">
+      <div className="my-4 mx-4 ">
+        <div className="border border-gray-300 p-2 rounded-lg">
+          <div className="flex flex-col">
+            <label className="text-sm text-gray-600 my-1">Question</label>
             <textarea
-              id={`question-${index}`}
-              className="w-full p-2 focus:outline-none focus:outline-blue-300 rounded-lg shadow-md text-sm my-2"
-              rows="2"
-              placeholder="Your question ?"
-              onChange={handleQuestionChange}
+              rows={3}
+              value={question}
+              placeholder="Enter your question"
+              required
+              onChange={(e) => setQuestion(e.target.value)}
+              className="border border-gray-300 p-2 rounded-md text-sm text-gray-700 focus:border-blue-300 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
             ></textarea>
-            <label htmlFor={`answer-${index}`}>Answer</label>
+          </div>
+          <div className="flex flex-col my-2">
+            <label className="text-sm text-gray-600 my-1">Answer</label>
             <textarea
-              id={`answer-${index}`}
-              className="w-full p-2 focus:outline-none focus:outline-blue-300 rounded-lg shadow-md text-sm my-2"
-              rows="5"
-              placeholder="Answer.."
-              onChange={handleAnswerChange}
+              rows={5}
+              value={answer}
+              placeholder="Enter answer"
+              required
+              onChange={(e) => setAnswer(e.target.value)}
+              className="border border-gray-300 p-2 rounded-md text-sm text-gray-700 focus:border-blue-300 focus:ring-4 focus:ring-blue-500/10 focus:outline-none"
             ></textarea>
-            <button
-              className="absolute top-0 right-2 px-2 py-1 mt-2 text-sm"
-              onClick={() => handleRemoveComponent(index)}
-            >
-              <i className="fa-solid fa-trash"></i>
-            </button>
           </div>
         </div>
-      ))}
-      <div>
-        <button
-          className="bg-gray-300 rounded-md px-2 py-1 my-5 mx-5 text-sm"
-          onClick={handleAddComponent}
-        >
-          Add
-        </button>
-        {qaComponents.length > 0 && (
+        <div className="flex items-center justify-end">
           <button
-            className="bg-red-500 text-white rounded-md px-2 py-1 my-5 mx-5 text-sm"
-            onClick={handleCloseAllComponents}
+            className="bg-gray-300 rounded-md px-2 py-1 my-3 text-sm"
+            onClick={handleAddComponent}
+            hidden={!question || !answer}
           >
-            Close All
+            Add
           </button>
+        </div>
+        {qaComponents.length > 0 && (
+          <div>
+            <h2 className="text-center text-gray-700 my-1">
+              Q&A Components ({qaComponents.length})
+            </h2>
+            <div className="border border-gray-400 rounded-lg mt-2">
+              <ul>
+                {qaComponents.map((component, index) => (
+                  <li
+                    key={index}
+                    className="my-4 mx-4 border border-gray-300 p-3 rounded-lg relative"
+                  >
+                    <div className="flex flex-col">
+                      <label className="my-1 text-sm text-gray-600">
+                        Question {index + 1}:
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={component.question}
+                        className="border border-gray-300 p-2 rounded-md text-sm text-gray-600 bg-gray-100 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10"
+                        readOnly
+                      ></textarea>
+                    </div>
+                    <div className="flex flex-col my-2">
+                      <label className="my-1 text-sm text-gray-600">
+                        Answer:
+                      </label>
+                      <textarea
+                        rows={5}
+                        value={component.answer}
+                        className="border border-gray-300 p-2 rounded-md text-sm text-gray-600 bg-gray-100 focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10"
+                        readOnly
+                      ></textarea>
+                    </div>
+                    <button
+                      className="absolute top-1 right-2 text-gray-700 hover:opacity-60"
+                      onClick={() => handleRemoveComponent(index)}
+                    >
+                      <i class="fa-regular fa-circle-xmark"></i>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         )}
       </div>
     </div>
   );
 };
-
 export default QASource;

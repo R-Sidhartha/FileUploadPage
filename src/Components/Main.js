@@ -3,11 +3,10 @@ import TotalChars from "./FileUpload/TotalChars";
 import FileSource from "./FileUpload/FileSource";
 import TextSource from "./FileUpload/TextSource";
 import WebsiteSource from "./FileUpload/WebsiteSource";
-import QASource from "./FileUpload/QASource";
+import QASOurce from "./FileUpload/QASOurce";
 
-const Main = ({ isMobileView }) => {
-  const [totalCharacters, setTotalCharacters] = useState(0);
-  const [files, setFiles] = useState([]);
+const Main = ({ isMobileView,totalCharacters,setTotalCharacters }) => {
+  const [Sources, setSources] = useState({totalFiles:'',totalTextChars:'',totalQAcomponenets:''});
   const [Source, setSource] = useState('File');
   const handleFileSource = () => {
     setSource('File')
@@ -21,20 +20,29 @@ const Main = ({ isMobileView }) => {
   const handleWebsiteSource = () => {
     setSource('Website');
   };
+  
   let sourceComponent;
 
   if (Source==='File') {
     sourceComponent = (
       <FileSource
-        setTotalCharacters={setTotalCharacters}
-        setFiles={setFiles}
+      setTotalCharacters={setTotalCharacters}
+      totalCharacters={totalCharacters}
         isMobileView={isMobileView}
+        setSources={setSources}
       />
     );
   } else if (Source==='Text') {
-    sourceComponent = <TextSource setTotalCharacters={setTotalCharacters}/>;
+    sourceComponent = <TextSource 
+    setTotalCharacters={setTotalCharacters}
+     totalCharacters={totalCharacters}
+     setSources={setSources}
+     />;
   } else if (Source==='Q&A') {
-    sourceComponent = <QASource setTotalCharacters={setTotalCharacters}/>;
+    sourceComponent = <QASOurce
+    setTotalCharacters={setTotalCharacters}
+     totalCharacters={totalCharacters}
+     setSources={setSources}/>;
   } else if (Source==='Website') {
     sourceComponent = <WebsiteSource />;
   }
@@ -61,7 +69,7 @@ const Main = ({ isMobileView }) => {
         <div
           className={`${
             isMobileView ? " flex-col" : ""
-          } flex flex-col w-screen  justify-center items-center`}
+          } flex flex-col w-screen  justify-center items-center mb-3`}
         >
           <div
             className={`flex justify-center w-full ${
@@ -119,7 +127,7 @@ const Main = ({ isMobileView }) => {
             <div className="w-1/5">
               <TotalChars
                 isMobileView={isMobileView}
-                files={files}
+                Sources={Sources}
                 totalCharacters={totalCharacters}
               />
             </div>

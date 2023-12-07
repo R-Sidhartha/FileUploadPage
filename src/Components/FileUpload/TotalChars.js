@@ -1,13 +1,13 @@
 import React from "react";
 
-const TotalChars = ({isMobileView,files,totalCharacters}) => {
+const TotalChars = ({isMobileView,Sources,totalCharacters}) => {
   return (
     <div>
       <div
         className={`${
           isMobileView ? " w-11/12 my-3 " : " w-full border border-gray-300 "
         }  flex flex-col items-center ${
-          files.length > 0
+          Sources.length > 0
             ? "border border-gray-400 border-opacity-40 rounded-3xl"
             : ""
         }  `}

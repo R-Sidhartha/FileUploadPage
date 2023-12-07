@@ -3,7 +3,10 @@ import { pdfjs } from "react-pdf";
 import { useDropzone } from "react-dropzone";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const FileSource = ({ setTotalCharacters, isMobileView }) => {
+const FileSource = ({ setTotalCharacters, isMobileView, totalCharacters }) => {
+  const [filechars, setfilechars] = useState(
+    totalCharacters > 0 ? totalCharacters : 0
+  );
   const [completedUploads, setCompletedUploads] = useState([]);
   const [files, setFiles] = useState([]);
 
@@ -39,35 +42,70 @@ const FileSource = ({ setTotalCharacters, isMobileView }) => {
     });
   };
   useEffect(() => {
-    const charCount = files.reduce((total, file) => {
-      let text = "";
-      if (file.type === "application/pdf") {
-        text = extractPdfText(file);
-      } else if (file.text) {
-        const trimmedText = file.text.split(/\s+/);
-        text = trimmedText.join(" ");
-      }
-      return total + text.length;
-    }, 0);
-  
-    // Use functional update to avoid potential stale closure issues
-    setTotalCharacters(prevTotalCharacters => prevTotalCharacters + charCount);
-  }, [files, setTotalCharacters]);
-  
-  const calculateCumulativeCharCount = () => {
-    const charCounts = files.map((file) => {
-      if (file.type === "application/pdf" || file.type === "text/plain") {
-        return file.text.length;
-      }
-      return 0;
-    });
+    const calculateCharCount = async () => {
+      const charCount = await files.reduce(async (totalPromise, file) => {
+        const total = await totalPromise;
 
-    const totalCharCount = charCounts.reduce(
-      (total, count) => total + count,
-      0
-    );
-    setTotalCharacters(totalCharCount);
-  };
+        let text = "";
+        if (file.type === "application/pdf") {
+          text = await extractPdfText(file);
+        } else if (file.text) {
+          const trimmedText = file.text.split(/\s+/);
+          text = trimmedText.join(" ");
+        }
+
+        return total + text.length;
+      }, Promise.resolve(0));
+      setfilechars(charCount);
+    };
+
+    calculateCharCount();
+  }, [files, setfilechars]);
+
+  useEffect(() => {
+    setTotalCharacters(filechars);
+  }, [files, filechars, setTotalCharacters]);
+
+  // const calculateCumulativeCharCount = () => {
+  //   const charCounts = files.map((file) => {
+  //     if (file.type === "application/pdf" || file.type === "text/plain") {
+  //       return file.text.length;
+  //     }
+  //     return 0;
+  //   });
+
+  //   const totalCharCount = charCounts.reduce(
+  //     (total, count) => total + count,
+  //     0
+  //   );
+  //   setchars(totalCharCount)
+
+  // };
+  // const handleFileChange = async (acceptedFiles) => {
+  //   const newFiles = acceptedFiles;
+
+  //   for (const file of newFiles) {
+  //     setCompletedUploads((prevCompletedUploads) => [
+  //       ...prevCompletedUploads,
+  //       file,
+  //     ]);
+
+  //     let text = "";
+  //     if (file.type === "application/pdf") {
+  //       text = await extractPdfText(file);
+  //     } else if (file.type === "text/plain") {
+  //       text = await extractTextFromTextFile(file);
+  //     }
+
+  //     setFiles((prevFiles) => [...prevFiles, { file, progress: 100, text }]);
+  //   }
+  //   // Calculate the cumulative character count after processing all files
+  //   calculateCumulativeCharCount();
+  // };
+  // const removeFile = (fileToRemove) => {
+  //   setFiles((prevFiles) => prevFiles.filter((f) => f.file !== fileToRemove));
+  //   calculateCumulativeCharCount();
+  // };
   const handleFileChange = async (acceptedFiles) => {
     const newFiles = acceptedFiles;
 
@@ -86,11 +124,40 @@ const FileSource = ({ setTotalCharacters, isMobileView }) => {
 
       setFiles((prevFiles) => [...prevFiles, { file, progress: 100, text }]);
     }
+
     // Calculate the cumulative character count after processing all files
-    calculateCumulativeCharCount();
+    const charCounts = newFiles.map((file) => {
+      if (file.type === "application/pdf" || file.type === "text/plain") {
+        return file.text.length;
+      }
+      return 0;
+    });
+
+    const totalCharCount = charCounts.reduce(
+      (total, count) => total + count,
+      0
+    );
+    setfilechars(totalCharCount);
   };
+
   const removeFile = (fileToRemove) => {
     setFiles((prevFiles) => prevFiles.filter((f) => f.file !== fileToRemove));
+
+    // Calculate the cumulative character count after removing the file
+    const charCounts = files
+      .filter((f) => f.file !== fileToRemove)
+      .map((file) => {
+        if (file.type === "application/pdf" || file.type === "text/plain") {
+          return file.text.length;
+        }
+        return 0;
+      });
+
+    const totalCharCount = charCounts.reduce(
+      (total, count) => total + count,
+      0
+    );
+    setfilechars(totalCharCount);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -128,16 +195,16 @@ const FileSource = ({ setTotalCharacters, isMobileView }) => {
             maxSize={15 * 1024 * 1024}
           />
           <div className="mt-2">
-          <div className="flex items-center mt-8">
-                  <span className="w-1/2 mr-2 h-px bg-gray-300 "></span>
-                  <p className=" text-sm font-semibold w-1/5 opacity-70">Uploaded Files</p>
-                  <span className=" w-1/2 ml-2 h-px bg-gray-300 "></span>
-                </div>
+            <div className="flex items-center mt-8">
+              <span className="w-1/2 mr-2 h-px bg-gray-300 "></span>
+              <p className=" text-sm font-semibold w-1/5 opacity-70">
+                Uploaded Files
+              </p>
+              <span className=" w-1/2 ml-2 h-px bg-gray-300 "></span>
+            </div>
             {files.length > 0 ? (
               <div className="flex flex-col justify-center items-center mt-2">
-                <ul
-                  className={'w-full'}
-                >
+                <ul className={"w-full"}>
                   {files.map((file, index) => (
                     <li key={index} className="mb-2 ">
                       <div className="flex flex-col items-center ">
@@ -179,13 +246,14 @@ const FileSource = ({ setTotalCharacters, isMobileView }) => {
                 </ul>
               </div>
             ) : (
-              <h2 className="my-3 opacity-70 text-center text-xs mr-2">No Files Uploaded</h2>
+              <h2 className="my-3 opacity-70 text-center text-xs mr-2">
+                No Files Uploaded
+              </h2>
             )}
-          </div>
           </div>
         </div>
       </div>
-    // </div>
+    </div>
   );
 };
 

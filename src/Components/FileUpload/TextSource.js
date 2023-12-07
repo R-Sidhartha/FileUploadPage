@@ -5,10 +5,10 @@ const TextSource = ({setTotalCharacters}) => {
 
   const handleTextChange = (event) => {
     const newText = event.target.value;
+    const charCountChange = newText.length - text.length;
     setText(newText);
-    setTotalCharacters(newText.length);
+    setTotalCharacters((prevCharCount) => prevCharCount + charCountChange);
   };
-
   return (
     <div>
       <div className='my-6 mx-6 rounded-lg border border-bray-400  focus:border-blue-300'>
