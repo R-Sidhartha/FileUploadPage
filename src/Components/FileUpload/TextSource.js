@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const TextSource = ({setTotalCharacters}) => {
-  const [text, setText] = useState('');
-
+const TextSource = ({setText,Text,settextchars}) => {
   const handleTextChange = (event) => {
     const newText = event.target.value;
-    const charCountChange = newText.length - text.length;
+    const charCountChange = newText.length - Text.length;
     setText(newText);
-    setTotalCharacters((prevCharCount) => prevCharCount + charCountChange);
+    settextchars((prevCharCount) => prevCharCount + charCountChange);
   };
   return (
     <div>
@@ -16,7 +14,7 @@ const TextSource = ({setTotalCharacters}) => {
           className='w-full p-2 focus:outline-none focus:outline-blue-300 rounded-lg shadow-md text-sm'
           rows="20" cols="50"
           placeholder="Enter text here..."
-          value={text}
+          value={Text}
           onChange={handleTextChange}
         ></textarea>
       </div>

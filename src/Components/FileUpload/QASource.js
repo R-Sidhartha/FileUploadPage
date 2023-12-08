@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 
-const QASource = ({ setTotalCharacters }) => {
-  const [qaComponents, setQaComponents] = useState([]);
+const QASource = ({setqaList,qaList,setqaChars }) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 
   const handleAddComponent = () => {
     if (question.trim() !== "" && answer.trim() !== "") {
       const newQaComponent = { question, answer };
-      setTotalCharacters(
+      setqaChars(
         (prevCharCount) => prevCharCount + question.length + answer.length
       );
 
-      setQaComponents((prevComponents) => [...prevComponents, newQaComponent]);
+      setqaList((prevComponents) => [...prevComponents, newQaComponent]);
       setQuestion("");
       setAnswer("");
     }
@@ -20,8 +19,8 @@ const QASource = ({ setTotalCharacters }) => {
 
   const handleRemoveComponent = (index) => {
     // Subtract the char count of the removed component
-    const removedComponent = qaComponents[index];
-    setTotalCharacters(
+    const removedComponent = qaList[index];
+    setqaChars(
       (prevCharCount) =>
         prevCharCount -
         removedComponent.question.length -
@@ -29,7 +28,7 @@ const QASource = ({ setTotalCharacters }) => {
     );
 
     // Remove the component from the array
-    setQaComponents((prevComponents) => {
+    setqaList((prevComponents) => {
       const updatedComponents = [...prevComponents];
       updatedComponents.splice(index, 1);
       return updatedComponents;
@@ -72,14 +71,14 @@ const QASource = ({ setTotalCharacters }) => {
             Add
           </button>
         </div>
-        {qaComponents.length > 0 && (
+        {qaList.length > 0 && (
           <div>
             <h2 className="text-center text-gray-700 my-1">
-              Q&A Components ({qaComponents.length})
+              Q&A Components ({qaList.length})
             </h2>
             <div className="border border-gray-400 rounded-lg mt-2">
               <ul>
-                {qaComponents.map((component, index) => (
+                {qaList.map((component, index) => (
                   <li
                     key={index}
                     className="my-4 mx-4 border border-gray-300 p-3 rounded-lg relative"
@@ -110,7 +109,7 @@ const QASource = ({ setTotalCharacters }) => {
                       className="absolute top-1 right-2 text-gray-700 hover:opacity-60"
                       onClick={() => handleRemoveComponent(index)}
                     >
-                      <i class="fa-regular fa-circle-xmark"></i>
+                      <i className="fa-regular fa-circle-xmark"></i>
                     </button>
                   </li>
                 ))}
