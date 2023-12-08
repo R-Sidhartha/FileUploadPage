@@ -3,7 +3,7 @@ import { pdfjs } from "react-pdf";
 import { useDropzone } from "react-dropzone";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const FileSource = ({ isMobileView,setFileList,FileList,setfilechars}) => {
+const FileSource = ({setFileList,FileList,setfilechars}) => {
   const [completedUploads, setCompletedUploads] = useState([]);
   // Function to handle text extraction for PDF files
   const extractPdfText = async (file) => {
@@ -88,9 +88,7 @@ const FileSource = ({ isMobileView,setFileList,FileList,setfilechars}) => {
   return (
     <div className="flex flex-col justify-center items-center">
       <div
-        className={`flex flex-col items-center  ${
-          isMobileView ? "mx-5 w-6/7" : " w-11/12"
-        }`}
+        className={`flex flex-col items-center w-11/12`}
       >
         <div className="w-full">
           <div

@@ -1,13 +1,11 @@
 import React from "react";
 
-const TotalChars = ({isMobileView,totalCharacters,Sources}) => {
+const TotalChars = ({totalCharacters,Sources}) => {
   const {filelist, qalist, fileChars, qachars, textChars}=Sources
   return (
-    <div>
+    <div className="w-3/4 md:w-1/2 lg:w-11/12">
       <div
-        className={`${
-          isMobileView ? " w-11/12 my-3 " : " w-11/12 border border-gray-300 "
-        }  flex flex-col items-center`}
+        className={`w-full border border-gray-300 flex flex-col items-center`}
       >
         <div
           className={`flex flex-col justify-center w-full p-3`}
