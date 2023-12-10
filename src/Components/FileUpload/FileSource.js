@@ -92,7 +92,7 @@ const FileSource = ({setFileList,FileList,setfilechars}) => {
       >
         <div className="w-full">
           <div
-            className="flex flex-col items-center justify-center mt-6 border border-gray-300 w-full p-6 cursor-pointer"
+            className="flex flex-col items-center justify-center mt-6 border border-gray-200 w-full p-6 cursor-pointer"
             {...getRootProps()}
           >
             <div className="relative w-16 h-16 rounded-full my-2 flex justify-center items-center">
@@ -113,13 +113,11 @@ const FileSource = ({setFileList,FileList,setfilechars}) => {
             accept=".pdf, .doc, .docx, .txt"
           />
           <div className="mt-2">
-            <div className="flex items-center mt-8">
-              <span className="w-1/2 mr-2 h-px bg-gray-300 "></span>
-              <p className=" text-sm font-semibold w-1/5 opacity-70">
-                Uploaded Files
-              </p>
-              <span className=" w-1/2 ml-2 h-px bg-gray-300 "></span>
-            </div>
+          <div className="flex items-center justify-center mt-6 mx-2">
+        <span className="w-1/4 sm:w-1/3 md:w-1/2  h-px bg-gray-200 "></span>
+        <p className=" opacity-70 w-1/3 sm:w-1/4 md:w-1/3 lg:w-1/4 flex justify-center text-gray-800 text-sm sm:text-base font-semibold">Uploaded files</p>
+        <span className="w-1/4 sm:w-1/3 md:w-1/2  h-px bg-gray-200 "></span>
+      </div>
             {FileList.length > 0 ? (
               <div className="flex flex-col justify-center items-center mt-2">
                 <ul className={"w-full"}>
